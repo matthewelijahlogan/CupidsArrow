@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "resources": "cordova-res",
-    "start": "node server.js"
+    "start": "node server/server.js"
   },
   "keywords": [
     "ecosystem:cordova"
