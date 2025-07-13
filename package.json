@@ -91,7 +91,7 @@
     "endent": "^2.1.0",
     "execa": "^5.1.1",
     "expand-template": "^2.0.3",
-    "express": "^5.1.0",
+    "express": "^4.21.2",
     "extsprintf": "^1.4.1",
     "fast-glob": "^3.3.3",
     "fast-json-parse": "^1.0.3",
