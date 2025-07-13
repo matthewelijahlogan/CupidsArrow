@@ -1,0 +1,259 @@
+/* -----------------------------
+   CUPID’S ARROW  –  style.css
+   Fully integrated for:
+   • 4 “stage” sections
+   • unified controls/classes
+   • responsive & mobile-first
+------------------------------ */
+
+/* =====  Google / custom fonts  ===== */
+@font-face {
+  font-family: 'Sarina';
+  src: url('../fonts/Sarina-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('../fonts/BebasNeue-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* =====  Root palette  ===== */
+:root{
+  --pink-light:#ffe6f0;
+  --pink-med:  #ffb6c1;
+  --pink:      #ff69b4;
+  --pink-dark: #ff1493;
+  --violet:    #d63384;
+  --shadow:    rgba(0,0,0,.15);
+}
+
+/* =====  Base / layout  ===== */
+*,
+*::before,
+*::after{box-sizing:border-box;}
+
+html,body{
+  margin:0;
+  padding:0;
+  height:100%;
+  overflow:hidden;
+}
+
+body{
+  font-family:'Bebas Neue',sans-serif;
+  background:linear-gradient(to bottom right,var(--pink-med),var(--pink-light));
+  color:var(--violet);
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:20px;
+}
+
+/* utility helpers – put this anywhere in style.css */
+.hidden{
+  display:none !important;
+}
+
+
+/* =====  Headings  ===== */
+h1{
+  font-family:'Sarina',cursive;
+  font-size:clamp(1.8rem,6vw,2.5rem);
+  margin:.5rem 0 1rem;
+  text-shadow:
+    0 0 5px  var(--pink),
+    0 0 10px var(--pink),
+    0 0 20px var(--pink);
+}
+h2.taskTitle{
+  font-size:clamp(1.2rem,4vw,1.6rem);
+  margin:.25rem 0;
+}
+
+/* =====  Stage Sections  ===== */
+#gameContainer{
+  width:100%;
+  max-width:800px;
+}
+
+.stage{
+  display:none;              /* hidden by default */
+  flex-direction:column;
+  align-items:center;
+  animation:fadeIn .5s ease-in-out forwards;
+}
+.stage.active{display:flex;}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:scale(.95);}
+  to  {opacity:1;transform:scale(1);}
+}
+
+/* =====  Slot-machine Card  ===== */
+.slot-machine{
+  background:#fff;
+  border-radius:16px;
+  width:90%;
+  max-width:440px;
+  padding:20px;
+  box-shadow:0 8px 18px var(--shadow);
+  display:flex;
+  flex-direction:column;
+  gap:1.2rem;
+}
+
+
+
+/* =====  Buttons  ===== */
+button{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1rem;
+  letter-spacing:.5px;
+  padding:10px 20px;
+  border:none;
+  border-radius:12px;
+  color:#fff;
+  background:var(--pink);
+  cursor:pointer;
+  transition:background .25s ease,transform .2s ease;
+}
+button:hover{background:var(--pink-dark);transform:scale(1.05);}
+button:active{transform:scale(.98);}
+button:disabled{opacity:.5;cursor:not-allowed;}
+
+.spinButton      {width:100%;}
+.plusBtn,
+.minusBtn,
+.startTimerBtn,
+.resetTimerBtn   {flex:1 1 70px;}
+
+/* =====  Task Display  ===== */
+.taskDisplay{
+  border:2px solid var(--pink);
+  border-radius:12px;
+  padding:15px;
+  min-height:140px;
+  background:#fff0f6;
+  color:var(--violet);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:.5rem;
+  box-shadow:0 0 8px var(--pink);
+  transition:all .3s ease;
+}
+
+.taskDescription{
+  font-size:clamp(.9rem,3.5vw,1.1rem);
+  margin:0;
+  line-height:1.2;
+  padding:0 .5rem;
+}
+
+.taskImage {
+  width: 100%;
+  max-width: 300px;        /* cap width for consistency */
+  height: auto;            /* maintain aspect ratio */
+  max-height: 200px;       /* keeps tall images in check */
+  object-fit: contain;     /* preserves full image in frame */
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(255,20,147,.4);
+  display: none;
+  margin: 0 auto;          /* center horizontally */
+}
+
+/* show when src populated */
+.taskImage[src]:not([src=""]){display:block;}
+
+
+
+/* =====  Timer Controls  ===== */
+.timerControls{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  align-items:center;
+}
+.timerDisplay{
+  font-size:2rem;
+  min-width:75px;
+  font-weight:bold;
+  user-select:none;
+  color:var(--violet);
+}
+
+/* =====  Responsive tweaks  ===== */
+@media (min-width:600px){
+  .slot-machine{padding:30px;}
+  button{font-size:1.1rem;}
+}
+
+/* === sticky logo bottom-center === */
+#bottomStickyIcon{
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);     /* centers */
+  width:20vw;
+  height:20vh;
+  z-index:200;
+  cursor:pointer;
+}
+#bottomStickyIcon:hover{
+  transform:translateX(-50%) scale(1.1);
+  filter:drop-shadow(0 0 10px hotpink);
+  transition:transform .2s ease,filter .2s ease;
+}
+/* ===== reorder timer controls into a wrap-flex grid ===== */
+.timerControls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Row 1: timer takes full width */
+.timerControls .timerDisplay {
+  flex: 1 1 100%;
+  font-size: 2.5rem;
+  text-align: center;
+}
+
+/* Row 2: +30 and –30 each take about half the width */
+.timerControls .plusBtn,
+.timerControls .minusBtn,
+.timerControls .startTimerBtn,
+.timerControls .resetTimerBtn {
+  flex: 1 1 45%;
+  min-width: 100px; /* prevents them getting too tiny */
+}
+
+/* Now the two sets naturally wrap:
+   • timerDisplay on its own line
+   • plusBtn & minusBtn on next line
+   • startTimerBtn & resetTimerBtn on the line after
+*/
+
+/* ===== hide everything but Spin & Accept on stage 1 ===== */
+#stage1 button:not(.spinButton):not(.acceptBtn) {
+  display: none !important;
+}
+
+/* 1) Only show ACCEPT TASK on Stage 1 */
+#stage2 .acceptBtn,
+#stage3 .acceptBtn,
+#stage4 .acceptBtn {
+  display: none !important;
+}
+
+/* 2) When popup is visible, hide the bottom logo */
+#positionPopup:not(.hidden) ~ #bottomStickyIcon {
+  display: none !important;
+}
