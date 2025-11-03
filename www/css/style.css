@@ -257,3 +257,92 @@ button:disabled{opacity:.5;cursor:not-allowed;}
 #positionPopup:not(.hidden) ~ #bottomStickyIcon {
   display: none !important;
 }
+
+/* ===========================================
+   CUPID’S ARROW – mobile fit & layout tuning
+   =========================================== */
+
+/* 1️⃣ Allow vertical scroll if content exceeds height */
+html, body {
+  overflow-y: auto;        /* prevents cutoff on small screens */
+  overflow-x: hidden;
+}
+
+/* 2️⃣ Ensure main container never clips edges */
+#gameContainer {
+  width: 100%;
+  max-width: 480px;        /* optimized for mobile portrait */
+  margin: 0 auto;
+  padding: 10px;
+}
+
+/* 3️⃣ Space stages comfortably for one-handed use */
+.stage {
+  padding: 10px 0 80px;    /* breathing room above bottom sticky icon */
+}
+
+/* 4️⃣ Tighten slot machine proportions for small screens */
+.slot-machine {
+  width: 100%;
+  max-width: 360px;
+  padding: 15px;
+  gap: 1rem;
+}
+
+/* 5️⃣ Make buttons finger-friendly */
+button {
+  font-size: clamp(1rem, 4vw, 1.2rem);
+  padding: 12px 16px;
+  min-height: 48px;        /* touch target */
+  width: 100%;
+  border-radius: 10px;
+}
+
+/* Space between stacked buttons */
+button + button {
+  margin-top: 8px;
+}
+
+/* 6️⃣ Task display adjusts dynamically */
+.taskDisplay {
+  width: 100%;
+  min-height: 160px;
+  padding: 12px;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(255, 20, 147, 0.2);
+}
+
+/* 7️⃣ Task image fully responsive */
+.taskImage {
+  max-width: 90%;
+  max-height: 160px;
+  border-radius: 12px;
+  margin: 10px auto;
+}
+
+/* 8️⃣ Center popup overlays cleanly */
+#positionPopup {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: 20px;
+  text-align: center;
+}
+
+/* 9️⃣ Sticky icon size balanced on small screens */
+#bottomStickyIcon {
+  width: 25vw;
+  height: auto;
+  max-height: 18vh;
+}
+
+/* 🔟 Ensure everything scales up smoothly on larger devices */
+@media (min-width: 768px) {
+  #gameContainer { max-width: 600px; }
+  .slot-machine { max-width: 480px; }
+  button { font-size: 1.2rem; }
+}

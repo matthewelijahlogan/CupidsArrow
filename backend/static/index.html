@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+     crossorigin="anonymous"></script>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({
+      google_ad_client: "ca-app-pub-1763277494440817/6191289624",
+      enable_page_level_ads: true
+    });
+  </script>
+  <title>Cupid's Arrow - Loaded Task Slot Machine</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Stages container -->
+  <div id="gameContainer">
+
+    <!-- Stage Template (repeated 4 times for your stages) -->
+    <section id="stage1" class="stage active">
+      <h1>Text Me</h1>
+      <div class="slot-machine">
+        <button type="button"  class="spinButton" data-stage="1">Wanna Flirt?</button>
+        <div class="taskDisplay" id="taskDisplay1">
+          <h2 class="taskTitle"></h2>
+          <p class="taskDescription"></p>
+          <img class="taskImage" src="" alt="">
+        </div>
+        <div class="timerControls" id="timerControls1">
+          <span class="timerDisplay" id="timer1">3:00</span>
+          <button type="button" class="plusBtn" data-stage="1">+30s</button>
+          <button type="button"  class="minusBtn" data-stage="1">-30s</button>
+          <button type="button"  class="startTimerBtn" data-stage="1">START</button>
+          <button type="button"  class="resetTimerBtn" data-stage="1">RESET</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="stage2" class="stage">
+      <h1>Tease Me</h1>
+      <div class="slot-machine">
+        <button type="button"  class="spinButton" data-stage="2">Drive Me Crazy?</button>
+        <div class="taskDisplay" id="taskDisplay2">
+          <h2 class="taskTitle"></h2>
+          <p class="taskDescription"></p>
+          <img class="taskImage" src="" alt="">
+        </div>
+        <div class="timerControls" id="timerControls2">
+          <span class="timerDisplay" id="timer2">3:00</span>
+          <button type="button"  class="plusBtn" data-stage="2">+30s</button>
+          <button type="button"  class="minusBtn" data-stage="2">-30s</button>
+          <button type="button"  class="startTimerBtn" data-stage="2">START</button>
+          <button type="button"  class="resetTimerBtn" data-stage="2">RESET</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="stage3" class="stage">
+      <h1>Please Me</h1>
+      <div class="slot-machine">
+        <button type="button"  class="spinButton" data-stage="3">Tongue Work Time</button>
+        <div class="taskDisplay" id="taskDisplay3">
+          <h2 class="taskTitle"></h2>
+          <p class="taskDescription"></p>
+          <img class="taskImage" src="" alt="">
+        </div>
+        <div class="timerControls" id="timerControls3">
+          <span class="timerDisplay" id="timer3">3:00</span>
+          <button type="button"  class="plusBtn" data-stage="3">+30s</button>
+          <button type="button"  class="minusBtn" data-stage="3">-30s</button>
+          <button type="button"  class="startTimerBtn" data-stage="3">START</button>
+          <button type="button"  class="resetTimerBtn" data-stage="3">RESET</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="stage4" class="stage">
+      <h1>Squeeze Me</h1>
+      <div class="slot-machine">
+        <button type="button"  class="spinButton" data-stage="4">How Do You Want It?</button>
+        <div class="taskDisplay" id="taskDisplay4">
+          <h2 class="taskTitle"></h2>
+          <p class="taskDescription"></p>
+          <img class="taskImage" src="" alt="">
+        </div>
+        <div class="timerControls" id="timerControls4">
+          <span class="timerDisplay" id="timer4">3:00</span>
+          <button type="button"  class="plusBtn" data-stage="4">+30s</button>
+          <button type="button"  class="minusBtn" data-stage="4">-30s</button>
+          <button type="button"  class="startTimerBtn" data-stage="4">START</button>
+          <button type="button"  class="resetTimerBtn" data-stage="4">RESET</button>
+        </div>
+      </div>
+    </section>
+
+  <!-- Sounds -->
+  <audio id="reelSpinSound" src="sounds/reelspin.mp3"></audio>
+  <audio id="dingSound"      src="sounds/ding.mp3"></audio>
+
+  <!-- Popup for selected task -->
+  <div id="positionPopup" class="popup-card hidden">
+    <div class="popup-content">
+      <span id="closePopup" class="close-button">&times;</span>
+      <h2 id="positionTitle"></h2>
+      <img id="positionImage" src="" alt="Task Image">
+      <p  id="positionDescription"></p>
+    </div>
+  </div>
+
+  <!-- Your image acting as a button -->
+  <img src="img/logo.png"
+      alt="Cupid's Arrow logo"
+      id="bottomStickyIcon"
+      style="cursor: pointer;">
+
+  <script>
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const stages = document.querySelectorAll('.stage');
+    const bottomStickyIcon = document.getElementById('bottomStickyIcon');
+
+    bottomStickyIcon.addEventListener('click', () => {
+      stages.forEach(stage => {
+        // Remove 'active' class from all stages
+        stage.classList.remove('active');
+      });
+
+      // Add 'active' class only to stage1
+      const stage1 = document.getElementById('stage1');
+      if (stage1) {
+        stage1.classList.add('active');
+      }
+
+      // Optionally, reset any other game state here if needed
+    });
+  });
+
+</script>
+
+
+
+<!-- put these just before </body> -->
+<script type="module" src="js/app.js"></script>      <!-- exports data + helper -->
+
+</div>
+</body>
+</html>
