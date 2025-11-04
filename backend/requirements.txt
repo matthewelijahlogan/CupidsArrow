@@ -1,2 +1,5 @@
-Flask
+flask
+flask-socketio
+eventlet
+flask-cors
 gunicorn

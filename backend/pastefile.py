@@ -3,31 +3,21 @@
 import os
 import uuid
 import random
-import time
-from flask import Flask, send_from_directory, request, jsonify
+from flask import Flask, send_from_directory, request
 from flask_socketio import SocketIO, join_room, leave_room, emit
 
 # ---------------------------------------------------
-# Flask + SocketIO Setup
+# Flask + SocketIO setup
 # ---------------------------------------------------
 app = Flask(__name__, static_folder="static", static_url_path="/static")
-socketio = SocketIO(
-    app,
-    cors_allowed_origins="*",
-    async_mode="eventlet",  # Best for Render & Heroku
-    ping_timeout=60,
-    ping_interval=25
-)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # ---------------------------------------------------
-# In-memory Game Store
+# In-memory game state and static data
 # ---------------------------------------------------
-games = {}  # {room_id: {"users": [sid1, sid2], "state": {}, "last_active": timestamp}}
+games = {}  # {room_id: {"users": [], "state": {...}}}
 
-# ---------------------------------------------------
 # Tasks per stage
-# (kept exactly as you posted – shortened for brevity)
-# ---------------------------------------------------
 tasksByStage = {
   1: [
     { "title": "Early Tease",           "description": "Send a subtle hint about tonight without giving too much away.", "image": "img/text1.jpg" },
@@ -224,6 +214,7 @@ tasksByStage = {
     }
   ]
 }
+
 # ---------------------------------------------------
 # Routes
 # ---------------------------------------------------
@@ -236,59 +227,24 @@ def serve(path="index.html"):
         return send_from_directory(app.static_folder, path)
     return send_from_directory(app.static_folder, "index.html")
 
-@app.route("/health")
-def health_check():
-    """Render uptime health check."""
-    return jsonify({"status": "ok", "rooms": len(games)}), 200
-
-# ---------------------------------------------------
-# Utility: Clean up old or empty rooms
-# ---------------------------------------------------
-def cleanup_rooms():
-    now = time.time()
-    expired = [rid for rid, g in games.items() if (now - g.get("last_active", now)) > 3600 or not g["users"]]
-    for rid in expired:
-        del games[rid]
-        print(f"[CLEANUP] Removed inactive room {rid}")
-
 # ---------------------------------------------------
 # SocketIO Events
 # ---------------------------------------------------
-@socketio.on("connect")
-def handle_connect():
-    print(f"[CONNECT] {request.sid} connected")
-
-@socketio.on("disconnect")
-def handle_disconnect():
-    print(f"[DISCONNECT] {request.sid}")
-    for room_id, game in list(games.items()):
-        if request.sid in game["users"]:
-            game["users"].remove(request.sid)
-            emit("player_left", {"sid": request.sid}, to=room_id)
-            print(f"[ROOM] {request.sid} left {room_id}")
-            if not game["users"]:
-                del games[room_id]
-                print(f"[CLEANUP] Room {room_id} deleted (empty)")
-    cleanup_rooms()
-
 @socketio.on("create_game")
 def handle_create_game():
     room_id = str(uuid.uuid4())[:8]
-    games[room_id] = {"users": [request.sid], "state": {}, "last_active": time.time()}
+    games[room_id] = {"users": [], "state": {}}
     join_room(room_id)
+    games[room_id]["users"].append(request.sid)
     emit("game_created", {"room": room_id}, to=request.sid)
     print(f"[CREATE] Room {room_id} created by {request.sid}")
 
 @socketio.on("join_game")
 def handle_join_game(data):
     room_id = data.get("room")
-    if not room_id:
-        emit("error", {"msg": "No room code provided"}, to=request.sid)
-        return
     if room_id in games and len(games[room_id]["users"]) < 2:
         join_room(room_id)
         games[room_id]["users"].append(request.sid)
-        games[room_id]["last_active"] = time.time()
         emit("game_joined", {"room": room_id}, to=request.sid)
         emit("player_joined", {"sid": request.sid}, to=room_id)
         print(f"[JOIN] {request.sid} joined room {room_id}")
@@ -301,21 +257,12 @@ def handle_spin_task(data):
     room_id = data.get("room")
     stage_id = data.get("stage")
     if not room_id or not stage_id:
-        emit("error", {"msg": "Invalid room or stage data"}, to=request.sid)
         return
-    try:
-        stage_num = int(stage_id.replace("stage", ""))
-    except ValueError:
-        emit("error", {"msg": f"Invalid stage format: {stage_id}"}, to=request.sid)
-        return
-
+    stage_num = int(stage_id.replace("stage", ""))
     if room_id in games and stage_num in tasksByStage:
         task = random.choice(tasksByStage[stage_num])
-        games[room_id]["last_active"] = time.time()
         emit("update_task", {"stageId": stage_id, "task": task}, to=room_id)
         print(f"[TASK] {stage_id} → {task['title']} in room {room_id}")
-    else:
-        emit("error", {"msg": "Stage not found"}, to=request.sid)
 
 @socketio.on("update_state")
 def handle_update_state(data):
@@ -323,14 +270,23 @@ def handle_update_state(data):
     state = data.get("state")
     if room_id in games:
         games[room_id]["state"] = state
-        games[room_id]["last_active"] = time.time()
         emit("state_update", {"state": state}, to=room_id)
-        print(f"[STATE] Room {room_id} updated")
+        print(f"[STATE] Room {room_id} updated state")
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    for room_id, g in list(games.items()):
+        if request.sid in g["users"]:
+            g["users"].remove(request.sid)
+            emit("player_left", {"sid": request.sid}, to=room_id)
+            print(f"[DISCONNECT] {request.sid} left {room_id}")
+            if len(g["users"]) == 0:
+                del games[room_id]
+                print(f"[CLEANUP] Deleted empty room {room_id}")
 
 # ---------------------------------------------------
-# Main Entry
+# Main entry
 # ---------------------------------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    print(f"[START] Cupid's Arrow server running on port {port}")
-    socketio.run(app, host="0.0.0.0", port=port)
+    socketio.run(app, debug=True, host="0.0.0.0", port=port)

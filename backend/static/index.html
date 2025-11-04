@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
      crossorigin="anonymous"></script>
   <script>
@@ -37,6 +37,13 @@
           <button type="button"  class="resetTimerBtn" data-stage="1">RESET</button>
         </div>
       </div>
+
+      <!-- Invite / Join UI -->
+      <div id="multiplayerControls" style="margin-top:15px;">
+        <button id="inviteBtn">Invite a Friend</button>
+        <button id="joinBtn">Join a Game</button>
+      </div>
+
     </section>
 
     <section id="stage2" class="stage">
@@ -96,6 +103,8 @@
       </div>
     </section>
 
+  </div>
+
   <!-- Sounds -->
   <audio id="reelSpinSound" src="sounds/reelspin.mp3"></audio>
   <audio id="dingSound"      src="sounds/ding.mp3"></audio>
@@ -110,41 +119,38 @@
     </div>
   </div>
 
+  <!-- Room popup -->
+  <div id="roomPopup" class="hidden">
+    <p>Your Room Code: <span id="roomCodeDisplay"></span></p>
+    <button id="copyRoomBtn">Copy</button>
+  </div>
+
+  <!-- Small UI anchors for multiplayer scripts (non-invasive) -->
+  <div id="globalUI" style="position:fixed;right:12px;bottom:12px;z-index:9999;text-align:right;">
+    <div id="gameStatus" style="background:rgba(0,0,0,0.6);color:#fff;padding:6px 8px;border-radius:6px;margin-bottom:6px;font-size:13px;">Idle</div>
+    <div id="globalTimer" style="background:rgba(0,0,0,0.6);color:#fff;padding:6px 8px;border-radius:6px;font-size:16px;">0:00</div>
+  </div>
+
   <!-- Your image acting as a button -->
   <img src="img/logo.png"
       alt="Cupid's Arrow logo"
       id="bottomStickyIcon"
       style="cursor: pointer;">
 
+  <!-- Load Socket.IO client first (served by Flask-SocketIO at /socket.io/socket.io.js) -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- Fallback to CDN if server-side socket client isn't available (useful for local debugging) -->
   <script>
+    if (typeof io === 'undefined') {
+      const s = document.createElement('script');
+      s.src = "https://cdn.jsdelivr.net/npm/socket.io-client@4/dist/socket.io.min.js";
+      s.onload = () => console.log('Loaded socket.io client from CDN fallback');
+      document.head.appendChild(s);
+    }
+  </script>
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const stages = document.querySelectorAll('.stage');
-    const bottomStickyIcon = document.getElementById('bottomStickyIcon');
-
-    bottomStickyIcon.addEventListener('click', () => {
-      stages.forEach(stage => {
-        // Remove 'active' class from all stages
-        stage.classList.remove('active');
-      });
-
-      // Add 'active' class only to stage1
-      const stage1 = document.getElementById('stage1');
-      if (stage1) {
-        stage1.classList.add('active');
-      }
-
-      // Optionally, reset any other game state here if needed
-    });
-  });
-
-</script>
-
-
-
-<!-- put these just before </body> -->
-<script type="module" src="js/app.js"></script>      <!-- exports data + helper -->
-
-</div>
+  <!-- Core scripts (ES modules) -->
+  <script type="module" src="js/app.js"></script>      <!-- exports data + helpers (must export tasksByStage or tasks) -->
+  <script type="module" src="js/gameSocket.js"></script> <!-- multiplayer / invite logic (expects io() global) -->
 </body>
 </html>

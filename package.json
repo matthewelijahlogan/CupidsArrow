@@ -159,6 +159,7 @@
     "simple-concat": "^1.0.1",
     "simple-get": "^4.0.1",
     "simple-swizzle": "^0.2.2",
+    "socket.io": "^4.8.1",
     "string_decoder": "^1.3.0",
     "string-argv": "^0.3.2",
     "strip-bom": "^4.0.0",
@@ -177,5 +178,14 @@
     "with-open-file": "^0.1.7",
     "wrappy": "^1.0.2",
     "xmlbuilder": "^15.1.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewelijahlogan/CupidsArrow.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/matthewelijahlogan/CupidsArrow/issues"
+  },
+  "homepage": "https://github.com/matthewelijahlogan/CupidsArrow#readme"
 }
