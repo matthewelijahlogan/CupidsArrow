@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.touchofdavinci.cupidsarrow" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Cupid's Arrow</name>
+    <description>A fun and flirty game for couples.</description>
+    <author email="matthewelijahlogan@gmail.com" href="https://touchofdavinci.com">
+        Matthew Logan/Touch of Davinci
+    </author>
+    <content src="intro.html" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+
+    <plugin name="cordova-plugin-battery-status" source="npm" spec="~2.0.3" />
+    <plugin name="cordova-plugin-camera" source="npm" spec="~4.1.0" />
+    <plugin name="cordova-plugin-device" source="npm" spec="~2.0.3" />
+    <plugin name="cordova-plugin-dialogs" source="npm" spec="~2.0.2" />
+    <plugin name="cordova-plugin-file" source="npm" spec="~6.0.2" />
+    <plugin name="cordova-plugin-geolocation" source="npm" spec="~4.0.1" />
+    <plugin name="cordova-plugin-inappbrowser" source="npm" spec="~3.2.0" />
+    <plugin name="cordova-plugin-media" source="npm" spec="~5.0.3" />
+    <plugin name="cordova-plugin-network-information" source="npm" spec="~2.0.2" />
+    <plugin name="cordova-plugin-vibration" source="npm" spec="~3.1.1" />
+    <plugin name="cordova-plugin-statusbar" source="npm" spec="~2.4.3" />
+    <plugin name="cordova-plugin-screen-orientation" source="npm" spec="~3.0.2" />
+    <plugin name="cordova-plugin-wkwebview-engine" source="npm" spec="~1.2.2" />
+
+    <preference name="WKWebViewOnly" value="true" />
+    <feature name="CDVWKWebViewEngine">
+        <param name="ios-package" value="CDVWKWebViewEngine" />
+    </feature>
+
+    <platform name="android">
+        <preference name="AndroidPersistentFileLocation" value="Compatibility" />
+        <preference name="android-minSdkVersion" value="22" />
+        <preference name="android-targetSdkVersion" value="35" />
+
+        <icon density="ldpi" src="res/android/ldpi.png" />
+        <icon density="mdpi" src="res/android/mdpi.png" />
+        <icon density="hdpi" src="res/android/hdpi.png" />
+        <icon density="xhdpi" src="res/android/xhdpi.png" />
+        <icon density="xxhdpi" src="res/android/xxhdpi.png" />
+        <icon density="xxxhdpi" src="res/android/xxxhdpi.png" />
+
+        <preference name="Orientation" value="portrait" />
+        <preference name="DisallowOverscroll" value="true" />
+        <preference name="Suppresses3DTouch" value="true" />
+    </platform>
+</widget>

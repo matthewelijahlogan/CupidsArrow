@@ -8,33 +8,38 @@ const path = require("path");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*" } // allow connections from any front-end
+  cors: { origin: "*" } // allow front-end connections
 });
 
 const PORT = process.env.PORT || 3000;
 
 // ---------- Serve static files ----------
-app.use(express.static(path.join(__dirname, "static")));
-
+app.use(express.static(path.join(__dirname, "www")));
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "static", "index.html"));
+  res.sendFile(path.join(__dirname, "www", "index.html"));
 });
 
 // ---------- In-memory game state ----------
 const rooms = {}; 
-// Structure: {
-//   roomId: { players: [socket.id], stages: { stage1: {...}, ... } }
-// }
+// Structure: { roomId: { players: [socket.id], stages: { stage1: {...}, ... } } }
 
-// ---------- Tasks (example simplified, replace with full tasks) ----------
+// ---------- Tasks (example placeholders, replace with full tasks) ----------
 const tasks = [
-  [
+  [ // Stage 1
     { title: "Task 1", description: "Do something fun", image: "img/text1.jpg" },
     { title: "Task 2", description: "Do something else", image: "img/text2.jpg" }
   ],
-  [
+  [ // Stage 2
     { title: "Task A", description: "Stage 2 task", image: "img/tease1.jpg" },
     { title: "Task B", description: "Another stage 2", image: "img/tease2.jpg" }
+  ],
+  [ // Stage 3
+    { title: "Task X", description: "Stage 3 task", image: "img/extra1.jpg" },
+    { title: "Task Y", description: "Another stage 3", image: "img/extra2.jpg" }
+  ],
+  [ // Stage 4
+    { title: "Task M", description: "Stage 4 task", image: "img/final1.jpg" },
+    { title: "Task N", description: "Another stage 4", image: "img/final2.jpg" }
   ]
 ];
 
@@ -67,7 +72,6 @@ io.on("connection", (socket) => {
 
     // Sync state
     socket.emit("state_update", { state: rooms[room].stages });
-
     console.log(`[JOIN] ${socket.id} joined room: ${room}`);
   });
 

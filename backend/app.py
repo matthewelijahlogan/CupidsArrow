@@ -1,5 +1,4 @@
 # app.py
-
 import os
 import uuid
 import random
@@ -7,27 +6,21 @@ import time
 from flask import Flask, send_from_directory, request, jsonify
 from flask_socketio import SocketIO, join_room, leave_room, emit
 
-# ---------------------------------------------------
+# ------------------------
 # Flask + SocketIO Setup
-# ---------------------------------------------------
-app = Flask(__name__, static_folder="static", static_url_path="/static")
-socketio = SocketIO(
-    app,
-    cors_allowed_origins="*",
-    async_mode="eventlet",  # Best for Render & Heroku
-    ping_timeout=60,
-    ping_interval=25
-)
+# ------------------------
+app = Flask(__name__, static_folder="static")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet", ping_timeout=60, ping_interval=25)
 
-# ---------------------------------------------------
-# In-memory Game Store
-# ---------------------------------------------------
+# ------------------------
+# In-memory Game State
+# ------------------------
 games = {}  # {room_id: {"users": [sid1, sid2], "state": {}, "last_active": timestamp}}
 
-# ---------------------------------------------------
-# Tasks per stage
-# (kept exactly as you posted – shortened for brevity)
-# ---------------------------------------------------
+# ------------------------
+# Tasks per Stage
+# (full list simplified for brevity; replicate as needed)
+# ------------------------
 tasksByStage = {
   1: [
     { "title": "Early Tease",           "description": "Send a subtle hint about tonight without giving too much away.", "image": "img/text1.jpg" },
@@ -224,13 +217,13 @@ tasksByStage = {
     }
   ]
 }
-# ---------------------------------------------------
+
+# ------------------------
 # Routes
-# ---------------------------------------------------
+# ------------------------
 @app.route("/")
 @app.route("/<path:path>")
 def serve(path="index.html"):
-    """Serve SPA files, fallback to index.html if not found."""
     file_path = os.path.join(app.static_folder, path)
     if os.path.exists(file_path):
         return send_from_directory(app.static_folder, path)
@@ -238,12 +231,11 @@ def serve(path="index.html"):
 
 @app.route("/health")
 def health_check():
-    """Render uptime health check."""
     return jsonify({"status": "ok", "rooms": len(games)}), 200
 
-# ---------------------------------------------------
-# Utility: Clean up old or empty rooms
-# ---------------------------------------------------
+# ------------------------
+# Utilities
+# ------------------------
 def cleanup_rooms():
     now = time.time()
     expired = [rid for rid, g in games.items() if (now - g.get("last_active", now)) > 3600 or not g["users"]]
@@ -251,21 +243,21 @@ def cleanup_rooms():
         del games[rid]
         print(f"[CLEANUP] Removed inactive room {rid}")
 
-# ---------------------------------------------------
+# ------------------------
 # SocketIO Events
-# ---------------------------------------------------
+# ------------------------
 @socketio.on("connect")
 def handle_connect():
     print(f"[CONNECT] {request.sid} connected")
 
 @socketio.on("disconnect")
 def handle_disconnect():
-    print(f"[DISCONNECT] {request.sid}")
+    sid = request.sid
+    print(f"[DISCONNECT] {sid}")
     for room_id, game in list(games.items()):
-        if request.sid in game["users"]:
-            game["users"].remove(request.sid)
-            emit("player_left", {"sid": request.sid}, to=room_id)
-            print(f"[ROOM] {request.sid} left {room_id}")
+        if sid in game["users"]:
+            game["users"].remove(sid)
+            emit("player_left", {"sid": sid}, to=room_id)
             if not game["users"]:
                 del games[room_id]
                 print(f"[CLEANUP] Room {room_id} deleted (empty)")
@@ -291,6 +283,7 @@ def handle_join_game(data):
         games[room_id]["last_active"] = time.time()
         emit("game_joined", {"room": room_id}, to=request.sid)
         emit("player_joined", {"sid": request.sid}, to=room_id)
+        emit("state_update", {"state": games[room_id]["state"]}, to=request.sid)
         print(f"[JOIN] {request.sid} joined room {room_id}")
     else:
         emit("error", {"msg": "Room full or does not exist"}, to=request.sid)
@@ -311,6 +304,7 @@ def handle_spin_task(data):
 
     if room_id in games and stage_num in tasksByStage:
         task = random.choice(tasksByStage[stage_num])
+        games[room_id]["state"][stage_id] = task
         games[room_id]["last_active"] = time.time()
         emit("update_task", {"stageId": stage_id, "task": task}, to=room_id)
         print(f"[TASK] {stage_id} → {task['title']} in room {room_id}")
@@ -327,9 +321,9 @@ def handle_update_state(data):
         emit("state_update", {"state": state}, to=room_id)
         print(f"[STATE] Room {room_id} updated")
 
-# ---------------------------------------------------
+# ------------------------
 # Main Entry
-# ---------------------------------------------------
+# ------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     print(f"[START] Cupid's Arrow server running on port {port}")
