@@ -1,0 +1,14 @@
+# render.yaml
+services:
+  - type: web
+    name: cupids-arrow
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    autoDeploy: true
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 10000 # Render will override this automatically
