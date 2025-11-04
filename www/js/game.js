@@ -181,7 +181,7 @@ export const tasksByStage = {
 // -------------------------
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
-const fmt = s => `${Math.floor(s/60)}:${String(s % 60).padStart(2, '0')}`;
+const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 
 const popup = $('#positionPopup');
 const closeBtn = $('#closePopup');
@@ -190,18 +190,19 @@ const pDesc = $('#positionDescription');
 const pImg = $('#positionImage');
 const ding = $('#dingSound');
 
-let state = { stage: 1, timers: {}, secs: { 1: 180, 2: 180, 3: 180 }, running: {} };
+let state = { stage: 1, timers: {}, secs: { 1:180,2:180,3:180 } };
 
 // -------------------------
 // Stage & Task Logic
 // -------------------------
-function toStage(n) {
+function toStage(n){
   $$('.stage').forEach(s => s.classList.toggle('active', s.id === `stage${n}`));
+  console.log(`[STAGE] Moved to Stage ${n}`);
 }
 
-function showTask(stage) {
+function showTask(stage){
   const list = tasksByStage[stage];
-  const task = list[Math.floor(Math.random() * list.length)];
+  const task = list[Math.floor(Math.random()*list.length)];
   const box = $(`#taskDisplay${stage}`);
   if (!box) return;
 
@@ -213,120 +214,118 @@ function showTask(stage) {
   pTitle.textContent = task.title;
   pDesc.textContent = task.description;
   pImg.src = task.image;
+
+  console.log(`[TASK] Stage ${stage}: ${task.title}`);
 }
 
-function startStageTimer(stage, onDone) {
+// -------------------------
+// Timer Functions
+// -------------------------
+function startStageTimer(stage,onDone){
   const disp = $(`#timer${stage}`);
-  if (state.running[stage]) return; // already running
-
-  let secs = state.secs[stage];
-  state.running[stage] = true;
-
-  state.timers[stage] = setInterval(() => {
-    secs--;
-    disp.textContent = fmt(secs);
-    state.secs[stage] = secs;
-
-    if (secs <= 0) {
+  clearInterval(state.timers[stage]);
+  state.timers[stage] = setInterval(()=>{
+    state.secs[stage]--;
+    if(disp) disp.textContent = fmt(state.secs[stage]);
+    if(state.secs[stage] <= 0){
       clearInterval(state.timers[stage]);
-      state.running[stage] = false;
-      ding.currentTime = 0;
+      ding.currentTime=0;
       ding.play();
-      if (onDone) onDone();
+      onDone();
     }
   }, 1000);
 }
 
-function stopStageTimer(stage) {
-  clearInterval(state.timers[stage]);
-  state.running[stage] = false;
+function addTime(stage, amount){
+  state.secs[stage] = Math.max(0, state.secs[stage] + amount);
+  const disp = $(`#timer${stage}`);
+  if(disp) disp.textContent = fmt(state.secs[stage]);
 }
 
-function resetStageTimer(stage) {
-  stopStageTimer(stage);
-  state.secs[stage] = 180;
-  $(`#timer${stage}`).textContent = fmt(state.secs[stage]);
-}
-
-function nextStage() {
+// -------------------------
+// Stage Flow
+// -------------------------
+function nextStage(){
   const cur = state.stage;
-  if (cur >= 3) {
-    console.log("🎉 Game complete!");
+  if(cur>=3){
+    console.log("[GAME] Completed all stages!");
+    updateGameStatus("🎉 Game complete!");
     popup.classList.remove('hidden');
+    ding.play();
     return;
   }
 
-  const next = cur + 1;
-  state.stage = next;
-  toStage(next);
-  beginStage(next);
+  const msg = document.createElement('div');
+  msg.className='stage-msg';
+  msg.textContent=`Stage ${cur} complete — next starting...`;
+  document.body.appendChild(msg);
+  setTimeout(()=>msg.remove(),3000);
+
+  setTimeout(()=>{
+    const next = cur + 1;
+    state.stage = next;
+    toStage(next);
+    beginStage(next);
+  },3000);
 }
 
-function beginStage(stage) {
+function beginStage(stage){
+  console.log(`[GAME] Starting Stage ${stage}`);
   showTask(stage);
 
-  if (stage === 1) {
-    // auto advance after 4s
-    setTimeout(() => nextStage(), 4000);
-  } else if (stage === 2) {
-    startStageTimer(stage, () => nextStage());
+  if(stage===1 || stage===2){
+    startStageTimer(stage,()=>nextStage());
+  } else if(stage===3){
+    popup.classList.remove('hidden');
+    ding.play();
+    console.log("[GAME] Final stage reached — showing popup.");
   }
 }
 
 // -------------------------
-// Popup close
+// Init game flow
 // -------------------------
-closeBtn.addEventListener('click', () => popup.classList.add('hidden'));
-
-// -------------------------
-// Stage button clicks
-// -------------------------
-$$('.spinButton').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const stage = parseInt(btn.dataset.stage);
-    state.stage = stage;
-    toStage(stage);
-    beginStage(stage);
-  });
-});
-
-// -------------------------
-// Timer control buttons
-// -------------------------
-$$('.plusBtn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const stage = parseInt(btn.dataset.stage);
-    state.secs[stage] += 30;
-    $(`#timer${stage}`).textContent = fmt(state.secs[stage]);
-  });
-});
-
-$$('.minusBtn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const stage = parseInt(btn.dataset.stage);
-    state.secs[stage] = Math.max(0, state.secs[stage] - 30);
-    $(`#timer${stage}`).textContent = fmt(state.secs[stage]);
-  });
-});
-
-$$('.startTimerBtn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const stage = parseInt(btn.dataset.stage);
-    startStageTimer(stage, () => nextStage());
-  });
-});
-
-$$('.resetTimerBtn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const stage = parseInt(btn.dataset.stage);
-    resetStageTimer(stage);
-  });
-});
-
-// -------------------------
-// Init
-// -------------------------
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded',()=>{
   toStage(1);
   beginStage(1);
+
+  // Hook up timer buttons
+  $$('.plusBtn').forEach(btn=>{
+    btn.addEventListener('click',()=>addTime(parseInt(btn.dataset.stage),30));
+  });
+  $$('.minusBtn').forEach(btn=>{
+    btn.addEventListener('click',()=>addTime(parseInt(btn.dataset.stage),-30));
+  });
+  $$('.startTimerBtn').forEach(btn=>{
+    btn.addEventListener('click',()=>startStageTimer(parseInt(btn.dataset.stage),()=>nextStage()));
+  });
+  $$('.resetTimerBtn').forEach(btn=>{
+    btn.addEventListener('click',()=>{ state.secs[parseInt(btn.dataset.stage)] = 180; addTime(parseInt(btn.dataset.stage),0); });
+  });
+
+  if(closeBtn){
+    closeBtn.addEventListener('click',()=>popup.classList.add('hidden'));
+  }
 });
+
+// -------------------------
+// SocketIO Multiplayer
+// -------------------------
+const socket = io();
+let roomId = 'room1';
+socket.emit('joinRoom',{room: roomId});
+
+function emitTaskAccepted(stage,taskTitle){
+  socket.emit('taskAccepted',{room:roomId,stage,taskTitle});
+}
+
+socket.on('taskAccepted',data=>{
+  console.log(`[MULTI] Player accepted task: ${data.taskTitle}`);
+});
+
+// Optional: remove any old room invite UI
+const gameStatusDisplay = $('#gameStatus');
+function updateGameStatus(msg){
+  if(gameStatusDisplay) gameStatusDisplay.textContent = msg;
+  console.log(`[STATUS] ${msg}`);
+}
