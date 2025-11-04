@@ -1,5 +1,5 @@
-flask
-flask-socketio
-eventlet
-flask-cors
-gunicorn
+Flask==2.3.5
+Flask-SocketIO==6.7.0
+python-socketio==5.9.0
+python-engineio==5.3.2
+eventlet==0.33.3
