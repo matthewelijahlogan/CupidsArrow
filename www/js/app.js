@@ -2,33 +2,6 @@
 
 export const tasksByStage = {
   1: [
-    { title: "Early Tease",           description: "Send a subtle hint about tonight without giving too much away.", image: "img/text1.jpg" },
-    { title: "Memory Spark",          description: "Text them about a spicy memory you both loved.",                 image: "img/text2.jpg" },
-    { title: "Countdown Message",     description: "Let them know you’re counting the hours until you’re together.", image: "img/text3.jpg" },
-    { title: "What Are You Wearing?",description: "Playfully ask what they’re wearing (with a wink).",              image: "img/text4.jpg" },
-    { title: "Can’t Wait",            description: "Tell them you’ve been thinking about them *all* day.",          image: "img/text5.jpg" },
-    { title: "Secret Plan",           description: "Hint at a surprise you’re planning for tonight.",                image: "img/text6.jpg" },
-    { title: "You + Me = 🔥",         description: "Send a flirty equation or emoji combo.",                         image: "img/text7.jpg" },
-    { title: "Lunch Break Lust",      description: "Text something hot right before their lunch break.",             image: "img/text8.jpg" },
-    { title: "Voice Drop",            description: "Send a short, sexy voice note saying how much you miss them.",  image: "img/text9.jpg" },
-    { title: "Code Word",             description: "Create a fun little code word for ‘I want you’.",               image: "img/text10.jpg" },
-    { title: "Roleplay Hint",         description: "Send a text in character like a flirty game’s just begun.",     image: "img/text11.jpg" },
-    { title: "Mystery Photo",         description: "Send a cropped pic and make them guess what it is.",            image: "img/text12.jpg" },
-    { title: "Mood Check",            description: "Ask them to rate their current mood from 💤 to 🔥.",             image: "img/text13.jpg" },
-    { title: "Text Striptease",       description: "Describe (in text) what you’re slowly taking off.",             image: "img/text14.jpg" },
-    { title: "Spoil You Later",       description: "Tell them one thing you’re going to do to spoil them tonight.", image: "img/text15.jpg" },
-    { title: "I Dare You",            description: "Send a mild dare, like ‘Text me what you’d do if I were there.’",image: "img/text16.jpg" },
-    { title: "Emoji Story",           description: "Send a flirty story using only emojis and make them decode it.", image: "img/text17.jpg" },
-    { title: "Tonight’s Theme",       description: "Name a fun or sexy ‘theme’ for the night ahead.",                image: "img/text18.jpg" },
-    { title: "Text Me When You’re Free", description: "Build anticipation by asking for a dedicated moment later.", image: "img/text19.jpg" },
-    { title: "Preview Line",          description: "Send just *one line* of something you’ll say later in bed.",    image: "img/text20.jpg" },
-    { title: "Your Turn",             description: "Send something spicy and tell them it’s their turn to reply.",  image: "img/text21.jpg" },
-    { title: "Flirty 5-Word Text",    description: "Challenge yourself to seduce in just five words.",              image: "img/text22.jpg" },
-    { title: "Fantasy Hint",          description: "Drop a vague hint about a fantasy you’ve been thinking about.", image: "img/text23.jpg" },
-    { title: "GIF Duel",              description: "Start a romantic or sexy GIF war.",                             image: "img/text24.jpg" },
-    { title: "Linger a Little",       description: "Say something that will stay on their mind all day.",           image: "img/text25.jpg" }
-    ],
-  2: [
     { title: "Slow Striptease",       description: "Do a slow, playful striptease while keeping eye contact.",         image: "img/tease1.jpg" },
     { title: "Kiss Trail",            description: "Kiss them softly from their neck to their belly.",                  image: "img/tease2.jpg" },
     { title: "Lap Dance Tease",       description: "Give a lap dance with just enough touch to drive them wild.",       image: "img/tease3.jpg" },
@@ -55,7 +28,7 @@ export const tasksByStage = {
     { title: "Just One Kiss",         description: "Give them one deep kiss, then back away and smile.",                image: "img/tease24.jpg" },
     { title: "Slow Crawl",            description: "Crawl toward them slowly and let your eyes say it all.",            image: "img/tease25.jpg" }
   ],
-  3: [
+  2: [
     { title: "Plumber",         
       description: "He stands over her while she rests her head on the edge of the bed.", 
       image: "img/FellacioPositions/plumber.png"
@@ -103,7 +76,7 @@ export const tasksByStage = {
     },
 
   ],
-  4: [
+  3: [
     {
       title: "Missionary",
       description: "A classic and intimate face-to-face position. Great for eye contact and closeness.",
@@ -201,6 +174,7 @@ export const tasksByStage = {
     }
   ]
 };
+
 
 // Quick selectors and formatter
 const $  = s => document.querySelector(s);

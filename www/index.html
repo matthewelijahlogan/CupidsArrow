@@ -11,23 +11,21 @@
   <!-- Stages container -->
   <div id="gameContainer">
 
-    <!-- Stage Template (repeated 4 times for your stages) -->
-
-    <section id="stage1" class="stage">
+    <section id="stage1" class="stage active">
       <h1>Tease Me</h1>
       <div class="slot-machine">
-        <button type="button"  class="spinButton" data-stage="2">Drive Me Crazy?</button>
-        <div class="taskDisplay" id="taskDisplay2">
+        <button type="button" class="spinButton" data-stage="2">Drive Me Crazy?</button>
+        <div class="taskDisplay" id="taskDisplay1">
           <h2 class="taskTitle"></h2>
           <p class="taskDescription"></p>
           <img class="taskImage" src="" alt="">
         </div>
-        <div class="timerControls" id="timerControls2">
-          <span class="timerDisplay" id="timer2">3:00</span>
-          <button type="button"  class="plusBtn" data-stage="2">+30s</button>
-          <button type="button"  class="minusBtn" data-stage="2">-30s</button>
-          <button type="button"  class="startTimerBtn" data-stage="2">START</button>
-          <button type="button"  class="resetTimerBtn" data-stage="2">RESET</button>
+        <div class="timerControls" id="timerControls1">
+          <span class="timerDisplay" id="timer1">3:00</span>
+          <button type="button" class="plusBtn" data-stage="1">+30s</button>
+          <button type="button" class="minusBtn" data-stage="1">-30s</button>
+          <button type="button" class="startTimerBtn" data-stage="1">START</button>
+          <button type="button" class="resetTimerBtn" data-stage="1">RESET</button>
         </div>
       </div>
     </section>
@@ -35,18 +33,18 @@
     <section id="stage2" class="stage">
       <h1>Please Me</h1>
       <div class="slot-machine">
-        <button type="button"  class="spinButton" data-stage="3">Tongue Work Time</button>
-        <div class="taskDisplay" id="taskDisplay3">
+        <button type="button" class="spinButton" data-stage="3">Tongue Work Time</button>
+        <div class="taskDisplay" id="taskDisplay2">
           <h2 class="taskTitle"></h2>
           <p class="taskDescription"></p>
           <img class="taskImage" src="" alt="">
         </div>
-        <div class="timerControls" id="timerControls3">
-          <span class="timerDisplay" id="timer3">3:00</span>
-          <button type="button"  class="plusBtn" data-stage="3">+30s</button>
-          <button type="button"  class="minusBtn" data-stage="3">-30s</button>
-          <button type="button"  class="startTimerBtn" data-stage="3">START</button>
-          <button type="button"  class="resetTimerBtn" data-stage="3">RESET</button>
+        <div class="timerControls" id="timerControls2">
+          <span class="timerDisplay" id="timer2">3:00</span>
+          <button type="button" class="plusBtn" data-stage="2">+30s</button>
+          <button type="button" class="minusBtn" data-stage="2">-30s</button>
+          <button type="button" class="startTimerBtn" data-stage="2">START</button>
+          <button type="button" class="resetTimerBtn" data-stage="2">RESET</button>
         </div>
       </div>
     </section>
@@ -54,71 +52,44 @@
     <section id="stage3" class="stage">
       <h1>Squeeze Me</h1>
       <div class="slot-machine">
-        <button type="button"  class="spinButton" data-stage="4">How Do You Want It?</button>
-        <div class="taskDisplay" id="taskDisplay4">
+        <div class="taskDisplay" id="taskDisplay3">
           <h2 class="taskTitle"></h2>
           <p class="taskDescription"></p>
           <img class="taskImage" src="" alt="">
         </div>
-        <div class="timerControls" id="timerControls4">
-          <span class="timerDisplay" id="timer4">3:00</span>
-          <button type="button"  class="plusBtn" data-stage="4">+30s</button>
-          <button type="button"  class="minusBtn" data-stage="4">-30s</button>
-          <button type="button"  class="startTimerBtn" data-stage="4">START</button>
-          <button type="button"  class="resetTimerBtn" data-stage="4">RESET</button>
+        <div class="timerControls" id="timerControls3">
+          <span class="timerDisplay" id="timer3">3:00</span>
+          <button type="button" class="plusBtn" data-stage="3">+30s</button>
+          <button type="button" class="minusBtn" data-stage="3">-30s</button>
+          <button type="button" class="startTimerBtn" data-stage="3">START</button>
+          <button type="button" class="resetTimerBtn" data-stage="3">RESET</button>
         </div>
       </div>
     </section>
 
-  <!-- Sounds -->
-  <audio id="reelSpinSound" src="sounds/reelspin.mp3"></audio>
-  <audio id="dingSound"      src="sounds/ding.mp3"></audio>
+    <!-- Sounds -->
+    <audio id="reelSpinSound" src="sounds/reelspin.mp3"></audio>
+    <audio id="dingSound" src="sounds/ding.mp3"></audio>
 
-  <!-- Popup for selected task -->
-  <div id="positionPopup" class="popup-card hidden">
-    <div class="popup-content">
-      <span id="closePopup" class="close-button">&times;</span>
-      <h2 id="positionTitle"></h2>
-      <img id="positionImage" src="" alt="Task Image">
-      <p  id="positionDescription"></p>
+    <!-- Popup for selected task -->
+    <div id="positionPopup" class="popup-card hidden">
+      <div class="popup-content">
+        <span id="closePopup" class="close-button">&times;</span>
+        <h2 id="positionTitle"></h2>
+        <img id="positionImage" src="" alt="Task Image">
+        <p id="positionDescription"></p>
+      </div>
     </div>
+
+    <!-- Your image acting as a button -->
+    <img src="img/logo.png"
+         alt="Cupid's Arrow logo"
+         id="bottomStickyIcon"
+         style="cursor: pointer;">
+
   </div>
 
-  <!-- Your image acting as a button -->
-  <img src="img/logo.png"
-      alt="Cupid's Arrow logo"
-      id="bottomStickyIcon"
-      style="cursor: pointer;">
+  <script type="module" src="js/game.js"></script>
 
-  <script>
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const stages = document.querySelectorAll('.stage');
-    const bottomStickyIcon = document.getElementById('bottomStickyIcon');
-
-    bottomStickyIcon.addEventListener('click', () => {
-      stages.forEach(stage => {
-        // Remove 'active' class from all stages
-        stage.classList.remove('active');
-      });
-
-      // Add 'active' class only to stage1
-      const stage1 = document.getElementById('stage1');
-      if (stage1) {
-        stage1.classList.add('active');
-      }
-
-      // Optionally, reset any other game state here if needed
-    });
-  });
-
-</script>
-
-
-
-<!-- put these just before </body> -->
-<script type="module" src="js/game.js"></script>      <!-- exports data + helper -->
-
-</div>
 </body>
 </html>

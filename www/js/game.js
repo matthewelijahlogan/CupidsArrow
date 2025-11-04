@@ -1,7 +1,7 @@
 // -------------------------
 // Task Data
 // -------------------------
-const tasksByStage = {
+export const tasksByStage = {
   1: [
     { title: "Slow Striptease",       description: "Do a slow, playful striptease while keeping eye contact.",         image: "img/tease1.jpg" },
     { title: "Kiss Trail",            description: "Kiss them softly from their neck to their belly.",                  image: "img/tease2.jpg" },
@@ -181,7 +181,7 @@ const tasksByStage = {
 // -------------------------
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
-const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+const fmt = s => `${Math.floor(s/60)}:${String(s % 60).padStart(2, '0')}`;
 
 const popup = $('#positionPopup');
 const closeBtn = $('#closePopup');
@@ -190,19 +190,18 @@ const pDesc = $('#positionDescription');
 const pImg = $('#positionImage');
 const ding = $('#dingSound');
 
-let state = { stage: 1, timers: {}, secs: { 1:180,2:180,3:180 } };
+let state = { stage: 1, timers: {}, secs: { 1: 180, 2: 180, 3: 180 }, running: {} };
 
 // -------------------------
 // Stage & Task Logic
 // -------------------------
-function toStage(n){
+function toStage(n) {
   $$('.stage').forEach(s => s.classList.toggle('active', s.id === `stage${n}`));
-  console.log(`[STAGE] Moved to Stage ${n}`);
 }
 
-function showTask(stage){
+function showTask(stage) {
   const list = tasksByStage[stage];
-  const task = list[Math.floor(Math.random()*list.length)];
+  const task = list[Math.floor(Math.random() * list.length)];
   const box = $(`#taskDisplay${stage}`);
   if (!box) return;
 
@@ -214,138 +213,120 @@ function showTask(stage){
   pTitle.textContent = task.title;
   pDesc.textContent = task.description;
   pImg.src = task.image;
-
-  console.log(`[TASK] Stage ${stage}: ${task.title}`);
 }
 
-function startStageTimer(stage,onDone){
+function startStageTimer(stage, onDone) {
   const disp = $(`#timer${stage}`);
+  if (state.running[stage]) return; // already running
+
   let secs = state.secs[stage];
-  clearInterval(state.timers[stage]);
-  state.timers[stage] = setInterval(()=>{
+  state.running[stage] = true;
+
+  state.timers[stage] = setInterval(() => {
     secs--;
     disp.textContent = fmt(secs);
-    if(secs<=0){
+    state.secs[stage] = secs;
+
+    if (secs <= 0) {
       clearInterval(state.timers[stage]);
-      ding.currentTime=0;
+      state.running[stage] = false;
+      ding.currentTime = 0;
       ding.play();
-      onDone();
+      if (onDone) onDone();
     }
-  },1000);
+  }, 1000);
 }
 
-function nextStage(){
+function stopStageTimer(stage) {
+  clearInterval(state.timers[stage]);
+  state.running[stage] = false;
+}
+
+function resetStageTimer(stage) {
+  stopStageTimer(stage);
+  state.secs[stage] = 180;
+  $(`#timer${stage}`).textContent = fmt(state.secs[stage]);
+}
+
+function nextStage() {
   const cur = state.stage;
-  if(cur>=4){
-    console.log("[GAME] Completed all stages!");
-    updateGameStatus("🎉 Game complete!");
+  if (cur >= 3) {
+    console.log("🎉 Game complete!");
+    popup.classList.remove('hidden');
     return;
   }
 
-  const msg = document.createElement('div');
-  msg.className='stage-msg';
-  msg.textContent=`Stage ${cur} complete — next starting...`;
-  document.body.appendChild(msg);
-  setTimeout(()=>msg.remove(),3000);
-
-  setTimeout(()=>{
-    const next=cur+1;
-    state.stage=next;
-    toStage(next);
-    beginStage(next);
-  },3000);
+  const next = cur + 1;
+  state.stage = next;
+  toStage(next);
+  beginStage(next);
 }
 
-function beginStage(stage){
-  console.log(`[GAME] Starting Stage ${stage}`);
+function beginStage(stage) {
   showTask(stage);
 
-  if(stage===1){
-    setTimeout(()=>nextStage(),4000);
-  } else if(stage===1 || stage===2){
-    startStageTimer(stage,()=>nextStage());
-  } else if(stage===3){
-    popup.classList.remove('hidden');
-    ding.play();
-    console.log("[GAME] Final stage reached — showing popup.");
+  if (stage === 1) {
+    // auto advance after 4s
+    setTimeout(() => nextStage(), 4000);
+  } else if (stage === 2) {
+    startStageTimer(stage, () => nextStage());
   }
 }
 
 // -------------------------
-// Init game flow
+// Popup close
 // -------------------------
-document.addEventListener('DOMContentLoaded',()=>{
+closeBtn.addEventListener('click', () => popup.classList.add('hidden'));
+
+// -------------------------
+// Stage button clicks
+// -------------------------
+$$('.spinButton').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const stage = parseInt(btn.dataset.stage);
+    state.stage = stage;
+    toStage(stage);
+    beginStage(stage);
+  });
+});
+
+// -------------------------
+// Timer control buttons
+// -------------------------
+$$('.plusBtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const stage = parseInt(btn.dataset.stage);
+    state.secs[stage] += 30;
+    $(`#timer${stage}`).textContent = fmt(state.secs[stage]);
+  });
+});
+
+$$('.minusBtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const stage = parseInt(btn.dataset.stage);
+    state.secs[stage] = Math.max(0, state.secs[stage] - 30);
+    $(`#timer${stage}`).textContent = fmt(state.secs[stage]);
+  });
+});
+
+$$('.startTimerBtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const stage = parseInt(btn.dataset.stage);
+    startStageTimer(stage, () => nextStage());
+  });
+});
+
+$$('.resetTimerBtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const stage = parseInt(btn.dataset.stage);
+    resetStageTimer(stage);
+  });
+});
+
+// -------------------------
+// Init
+// -------------------------
+document.addEventListener('DOMContentLoaded', () => {
   toStage(1);
   beginStage(1);
 });
-
-// -------------------------
-// SocketIO Multiplayer
-// -------------------------
-const socket = io();
-let roomId = 'room1';
-
-socket.emit('joinRoom',{room: roomId});
-
-function emitTaskAccepted(stage,taskTitle){
-  socket.emit('taskAccepted',{room:roomId,stage,taskTitle});
-}
-
-socket.on('taskAccepted',data=>{
-  console.log(`[MULTI] Player accepted task: ${data.taskTitle}`);
-});
-
-// Optional: room invite UI
-const inviteBtn = $('#inviteBtn');
-const joinBtn = $('#joinBtn');
-const roomPopup = $('#roomPopup');
-const roomCodeDisplay = $('#roomCodeDisplay');
-const copyRoomBtn = $('#copyRoomBtn');
-const gameStatusDisplay = $('#gameStatus');
-
-if(inviteBtn){
-  inviteBtn.addEventListener('click',()=>{
-    socket.emit('create_game');
-    console.log("[SOCKET] Creating game...");
-  });
-}
-if(copyRoomBtn){
-  copyRoomBtn.addEventListener('click',()=>{
-    if(!roomId) return alert("No room ID to copy!");
-    navigator.clipboard.writeText(roomId).then(()=>alert("Room code copied!"));
-  });
-}
-if(joinBtn){
-  joinBtn.addEventListener('click',()=>{
-    const code=prompt("Enter room code to join:");
-    if(code) socket.emit('join_game',{room:code.trim()});
-  });
-}
-
-socket.on("game_created",(data)=>{
-  roomId=data.room;
-  if(roomCodeDisplay) roomCodeDisplay.textContent=roomId;
-  if(roomPopup) roomPopup.classList.remove("hidden");
-  console.log(`[SOCKET] Game created, room ID: ${roomId}`);
-});
-
-socket.on("game_joined",(data)=>{
-  roomId=data.room;
-  alert(`Joined room: ${roomId}`);
-  console.log(`[SOCKET] Successfully joined room: ${roomId}`);
-});
-socket.on("player_joined",(data)=>{
-  console.log(`[SOCKET] Other player joined: ${data.sid}`);
-});
-socket.on("player_left",(data)=>{
-  console.log(`[SOCKET] Player left: ${data.sid}`);
-  alert("The other player has left the room.");
-});
-
-// -------------------------
-// Status UI
-// -------------------------
-function updateGameStatus(msg){
-  if(gameStatusDisplay) gameStatusDisplay.textContent=msg;
-  console.log(`[STATUS] ${msg}`);
-}
